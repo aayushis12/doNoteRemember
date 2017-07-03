@@ -1,0 +1,163 @@
+class Todo extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={
+      input:'',
+      list:[]
+    }
+    this.addTodo=this.addTodo.bind(this);
+    this.deleteTodo = this.deleteTodo.bind(this);
+    this.updateTodo=this.updateTodo.bind(this);
+  }
+  deleteTodo(i){
+    var list = this.state.list;
+    list.splice(i, 1);
+    this.setState({
+      list: list
+    });
+  }
+ 
+  addTodo(saveText){
+    var list=this.state.list;
+    list.push({
+      text: saveText,
+      date: "" +new Date()
+    });
+    this.setState({
+      list: list
+    })
+  }
+  updateTodo(i, newText){
+    console.log(i);
+    console.log(newText);
+    var list = this.state.list;
+    list[i].text = newText;
+    
+    this.setState({
+      list: list
+    });
+  }
+  render(){
+    //console.log(this.props.message);
+    return(
+      <div>
+        <Save text={this.state.input} saveText={this.addTodo}/>
+        <Display display={this.state.list} deleteTodo={this.deleteTodo} updateTodo={this.updateTodo}/>
+       </div>
+    )
+  }
+}
+class Save extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={
+      input:this.props.text
+    }
+    this.changeText=this.changeText.bind(this);
+    this.addtoTodo=this.addtoTodo.bind(this);
+  }
+  changeText(e){
+    this.setState({
+      input:e.target.value
+    })
+  }
+  addtoTodo(){
+    this.props.saveText(this.state.input);
+    this.setState({
+      input:''
+    })
+  }
+  render(){
+    return(
+      <div className='input'>
+        <input type='text' value={this.state.input} onChange={this.changeText} />
+        <input type='button' value='save' onClick={this.addtoTodo} />
+      </div>
+    )
+  }
+}
+class Display extends React.Component{
+  constructor(props){
+    super(props);
+    this.state={
+      todos:[]
+    }
+  }
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      todos:nextProps.display
+    })
+  }
+  render(){
+    var renderList=this.state.todos;
+    //console.log(renderList)
+    var listElements = [];
+    for(var i=0;i<renderList.length; i++){
+      listElements.push(
+        <Post i={i} text={renderList[i].text} date={renderList[i].date} deleteTodo={this.props.deleteTodo} updateTodo={this.props.updateTodo}/>
+      )
+    }
+    return(
+      <div className="text-primary input">{listElements}</div>
+    )
+  }
+}
+
+class Post extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      isEdit: false,
+      text: this.props.text
+    };
+    this.deleteTodo=this.deleteTodo.bind(this);
+    this.editTodo=this.editTodo.bind(this);
+    this.onchange=this.onchange.bind(this);
+    this.updateTodo=this.updateTodo.bind(this);
+  }
+  
+  deleteTodo(i){
+    this.props.deleteTodo(i)
+  }
+  editTodo(){
+    this.setState({
+      isEdit: true
+    });
+  }
+  updateTodo(i){
+    console.log("textis: "+ this.state.text);
+    this.props.updateTodo(i, this.state.text)
+    this.setState({
+      isEdit: false
+    });
+    
+  }
+  onchange(e){
+    console.log("heyy")
+    this.setState({
+      text: e.target.value
+    })
+  }
+  render(){
+    if(this.state.isEdit === false){
+      return(
+      <div>
+          <span className='text_date'>Text: {this.props.text} | </span>
+          <span className='text_date'>Date: {this.props.date} </span>
+          <a className="delete" onClick={this.deleteTodo.bind(this, this.props.i)}>Delete</a>
+        <a className="edit" onClick={this.editTodo}>Edit</a>
+          <hr/>
+      </div>
+      )
+    }else{
+      return (
+      <div>
+          <input type="text" value={this.state.text} onChange={this.onchange} />
+          <button onClick={this.updateTodo.bind(this, this.props.i)}> Update </button>
+      </div>
+        )
+    }
+    
+  }
+}
+ReactDOM.render(<Todo message="hello"/>,document.getElementById('root'));

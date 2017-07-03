@@ -1,0 +1,17 @@
+.input{
+ text-align:center;
+  border:2px solid black;
+  width:35%;
+  margin:0 auto;
+  background-color:gray;
+}
+.text_date{
+  color:black;
+}
+.edit,.delete{
+  text-decoration:none;
+  margin:0.2em;
+}
+.delete{
+  color:red;
+}
